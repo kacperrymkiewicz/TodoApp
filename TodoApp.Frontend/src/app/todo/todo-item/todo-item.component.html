@@ -1,0 +1,25 @@
+<div>
+  <span
+    class="fw-bold"
+    [class.text-decoration-line-through]="item().isCompleted"
+    [class.text-muted]="item().isCompleted"
+  >
+    {{ item().title }}
+  </span>
+  @if (item().description) {
+    <small
+      class="d-block text-muted"
+      [class.text-decoration-line-through]="item().isCompleted"
+    >
+      {{ item().description }}
+    </small>
+  }
+</div>
+
+<input
+  type="checkbox"
+  class="form-check-input"
+  style="cursor: pointer;"
+  [checked]="item().isCompleted"
+  (change)="toggleStatus()"
+/>

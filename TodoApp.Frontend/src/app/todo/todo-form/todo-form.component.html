@@ -1,0 +1,37 @@
+<div class="card bg-light mb-4">
+  <div class="card-body">
+    <h5 class="card-title">Dodaj nowe zadanie</h5>
+
+    <div class="mb-3">
+      <label class="form-label">Tytuł</label>
+      <input
+        class="form-control"
+        [(ngModel)]="newTodo.title"
+        placeholder="Podaj tytuł..."
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Opis</label>
+      <input
+        class="form-control"
+        [(ngModel)]="newTodo.description"
+        placeholder="Podaj opis..."
+      />
+    </div>
+
+    <button
+      class="btn btn-primary w-100"
+      (click)="onSubmit()"
+      [disabled]="!newTodo.title.trim() || isAdding()"
+    >
+      @if (isAdding()) {
+        <span class="spinner-border spinner-border-sm"></span>
+        <span class="ms-2">Dodawanie...</span>
+      } @else {
+        <span>Dodaj</span>
+      }
+    </button>
+  </div>
+</div>

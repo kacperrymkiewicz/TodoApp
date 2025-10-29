@@ -1,0 +1,32 @@
+@if (isLoading()) {
+  <div class="text-center">
+    <div class="spinner-border text-primary" style="width: 2rem; height: 2rem;"></div>
+    <p class="mt-2">Pobieranie listy zadań...</p>
+  </div>
+} @else {
+  <ul class="list-group mb-3">
+    @for (item of todos(); track item.id) {
+      <app-todo-item
+        [item]="item"
+        (statusChange)="statusChange.emit($event)"
+      ></app-todo-item>
+    }
+    @empty {
+      @if (error()) {
+        <li class="list-group-item list-group-item-danger text-center">
+          <p class="mb-0">Nie udało się pobrać listy zadań</p>
+          <button
+            class="btn btn-sm btn-outline-danger mt-1"
+            (click)="reload.emit()"
+          >
+            Spróbuj ponownie
+          </button>
+        </li>
+      } @else {
+        <li class="list-group-item list-group-item-info text-center">
+          Brak zadań na liście
+        </li>
+      }
+    }
+  </ul>
+}

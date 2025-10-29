@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApp.API.Data;
+using TodoApp.API.Dtos;
 using TodoApp.API.Models;
 
 namespace TodoApp.API.Controllers
@@ -17,18 +18,23 @@ namespace TodoApp.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<TodoItem>>> GetTodoItems()
+        public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
         {
-            return await _context.TodoItems.OrderBy(t => t.Id).ToListAsync();
+            var todoItems = await _context.TodoItems
+                .OrderByDescending(t => t.Id)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return Ok(todoItems);
         }
 
         [HttpPost]
-        public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
+        public async Task<ActionResult<TodoItem>> PostTodoItem([FromBody] TodoItemCreateDto newTodoItem)
         {
             var newItem = new TodoItem
             {
-                Title = todoItem.Title,
-                Description = todoItem.Description,
+                Title = newTodoItem.Title,
+                Description = newTodoItem.Description,
                 IsCompleted = false
             };
 
@@ -39,13 +45,19 @@ namespace TodoApp.API.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> ToggleTodoItem(int id)
+        public async Task<ActionResult<TodoItem>> PutTodoItem([FromRoute] int id, [FromBody] TodoItemUpdateDto updatedTodoItem)
         {
-            var item = await _context.TodoItems.FindAsync(id);
-            if (item == null) return NotFound();
-            item.IsCompleted = !item.IsCompleted;
+            var todoItem = await _context.TodoItems.FindAsync(id);
+            if (todoItem == null)
+                return NotFound();
+
+            todoItem.Title = updatedTodoItem.Title;
+            todoItem.Description = updatedTodoItem.Description;
+            todoItem.IsCompleted = updatedTodoItem.IsCompleted;
+
             await _context.SaveChangesAsync();
-            return NoContent();
+
+            return Ok(todoItem);
         }
     }
 }
